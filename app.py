@@ -12,9 +12,8 @@ from waitress import serve
 
 app = Flask(__name__)
 
-img = Image.open('./images/test.jpeg')
 image_processor = AutoImageProcessor.from_pretrained("google/vit-base-patch16-224")
-inputs = image_processor(img, return_tensors="tf")
+
 
 model = TFAutoModelForImageClassification.from_pretrained("google/vit-base-patch16-224")
 
@@ -31,6 +30,9 @@ def classify():
     file.save(f'images/{filename}.jpg')
     print('File uploaded successfully')
     print('Initialising classification...')
+
+    img = Image.open(f'./images/{filename}.jpg')
+    inputs = image_processor(img, return_tensors="tf")
 
     logits = model(**inputs).logits
     predicted_class_id = int(tf.math.argmax(logits, axis=-1)[0])
